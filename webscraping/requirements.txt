@@ -1,0 +1,12 @@
+bs4
+selenium
+boto3
+sqlalchemy
+psycopg2-binary
+pandas
+requests
+webdriver-manager
+tqdm
+pathlib
+urllib3
+uuid
