@@ -1,7 +1,7 @@
-# AiCore
+# webscraper
 
-AiCore
-Webscraping Project
+
+Webscraping Project - AiCore
 
 Milestone 1
 
