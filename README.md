@@ -60,7 +60,53 @@ This milestone was quite complex yet interesting. Whilst it was relatively strai
 
 The data was easily stored in their respective dictionaries, but there were a few issues encountered when it came to writing up code to create a new folder and data dumping in the required json file that also needed to be created in the new folder. The first part was relatively simple, but to create the file in the desired folder required another line or two of code before this worked (the same applied with adding any downloaded images to the desired folder), otherwise the file was created in the current working directory instead. For the images, the code was amended so that any images downloaded at an earlier part in the script were simply moved to the desired folder.
 
+    def get_product_info(self, xpath1 : str = '//h3[@class="product-title"]', 
+                        xpath2 : str = '//span[@class="price"]', xpath3 : str = './/img', 
+                        xpath4 : str = './/a'):
+
+        self.container = self.find_container()
+        self.product_dict = {"product_link": [], "product_name": [], "price": [], "product_id": [], "product_uuid": []}
+
+        self.product_name = self.container.find_elements(By.XPATH, xpath1)
+        self.product_price = self.container.find_elements(By.XPATH, xpath2)
+        self.image_link = self.container.find_elements(By.XPATH, xpath3)
+        self.image_list = []
+        
+        self.product_link = self.container.find_elements(By.XPATH, xpath4)
+        self.link_list = []
+
+        #display progress bar whilst collecting product info
+        for i, link in enumerate(tqdm(self.product_link, desc = 'Collecting page links: ')):
+            product_link = link.get_attribute("href")
+            self.link_list.append(product_link)
+            self.product_dict["product_link"].append(product_link)
+            self.z = product_link.rsplit("/", 6)
+            self.product_dict["product_id"].append(self.z[5])
+
+        for i, product in enumerate(tqdm(self.product_name, desc = 'Collecting product names: ')): 
+            self.product_uuid = uuid.uuid4()
+            self.product_dict["product_name"].append(product.text) 
+            self.product_dict["product_uuid"].append(self.product_uuid)
+
+        for i, price in enumerate(tqdm(self.product_price, desc = 'Collecting product prices: ')):
+            self.product_dict["price"].append(price.text) 
+            
+        return self.product_dict
+
 Additional code was also required to be able to dump the UUID numbers into the json file. Fortunately the code was readily available on StackOverflow, so it was copied and pasted in.
+
+          product_file = f"se_product_data_{self.text}"
+          create_file = os.path.join(product_file+".json") #add file type here
+          
+          with open(create_file, "w") as fp: #specify path here - create data.json file
+                    #Dealing with no UUID serialization support in json
+                    JSONEncoder_olddefault = JSONEncoder.default
+                    def JSONEncoder_newdefault(self, o):
+                            if isinstance(o, UUID): return str(o)
+                            return JSONEncoder_olddefault(self, o)
+                    JSONEncoder.default = JSONEncoder_newdefault
+                    
+                    json.dump(self.product_dict, fp,  indent=4)
 
 The code was reviewed and modified where possible, before the Scraper class was moved to a .py file and imported into the newly created .ipynb (original script has been retained just in case older code is required).
 
