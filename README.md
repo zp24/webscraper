@@ -10,22 +10,27 @@ The website chosen for this project was Square Enix store as I am familiar with 
 
 A Scraper class was created to access a site, click on the accept cookies button, and includes a few methods for standard navigation around a site (e.g. clicking on tabs and adding keywords to the search bar. There were some issues in accessing the "accept cookies" button in terms of checking if the button was within another frame, locating the proper Xpath and clicking on the button, but these were eventually rectified. Once the methods were added and tested, if name == "main" block was added to initialise the class only if the script was run directly.
 
-  class Scraper:
-        try:
-           
-                self.driver = Chrome(ChromeDriverManager().install(), options=options) #create driver
-                
-            else:
-                self.driver = Chrome(ChromeDriverManager().install()) #create driver
+  import selenium
+  from selenium import webdriver
+  from selenium.webdriver import Chrome
+  from webdriver_manager.chrome import ChromeDriverManager #installs Chrome webdriver
+  from selenium.webdriver.common.by import By
+  from selenium.webdriver.support.ui import WebDriverWait
+  from selenium.webdriver.support import expected_conditions as EC
+  from selenium.common.exceptions import TimeoutException, NoSuchElementException
+  
+    class Scraper:
+          try:
+            self.driver = Chrome(ChromeDriverManager().install()) #create driver
             self.driver.get(url)
             #driver = Chrome() #specify location of chromedriver if downloading webdriver
             print("Webpage loaded successfully")
             
         except NoSuchElementException:
             print("Webpage not loaded - please check")
-  
-   #click accept cookies button on webpage
-    def accept_cookies(self, xpath: str = '//*[@id="onetrust-accept-btn-handler"]'): 
+    
+      #click accept cookies button on webpage
+      def accept_cookies(self, xpath: str = '//*[@id="onetrust-accept-btn-handler"]'): 
         '''
         Looks for and clicks on the accept cookies button
 
